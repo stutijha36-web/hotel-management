@@ -1,0 +1,315 @@
+
+{% extends "base.html" %}
+
+{% block c %}
+
+<!-- HERO SECTION -->
+
+<section class="search-hero">
+
+    <div class="search-hero-content">
+
+        <span class="hero-label">WELCOME TO HOTEL AGAPASTALA</span>
+
+        <h1>Find Your Perfect Stay.</h1>
+
+        <p>
+            Discover comfortable rooms, beautiful destinations
+            and exceptional hospitality. Book your stay with confidence.
+        </p>
+
+    </div>
+
+    <div class="hero-decoration">
+        <span>✦</span>
+    </div>
+
+</section>
+
+
+<!-- SEARCH FORM -->
+
+<section class="booking-search">
+
+    <div class="search-heading">
+        <span class="dashboard-label">PLAN YOUR STAY</span>
+        <h2>Find Available Rooms</h2>
+        <p>Choose your preferences to discover the perfect room.</p>
+    </div>
+
+    <form class="search-form" method="get">
+
+        <div class="search-fields">
+
+            <label>
+                Destination
+                <input
+                    type="text"
+                    name="city"
+                    value="{{ f.city }}"
+                    placeholder="Enter city, e.g. Delhi or Goa">
+            </label>
+
+            <label>
+                Check-in
+                <input
+                    type="date"
+                    name="check_in"
+                    min="{{ today }}"
+                    value="{{ f.check_in }}"
+                    required>
+            </label>
+
+            <label>
+                Check-out
+                <input
+                    type="date"
+                    name="check_out"
+                    min="{{ today }}"
+                    value="{{ f.check_out }}"
+                    required>
+            </label>
+
+            <label>
+                Guests
+                <input
+                    type="number"
+                    name="guests"
+                    min="1"
+                    value="{{ f.guests or 1 }}">
+            </label>
+
+            <label>
+                Room Type
+                <select name="type">
+
+                    <option value="">Any Type</option>
+
+                    {% for t in types %}
+
+                    <option
+                        value="{{ t.id }}"
+                        {{ 'selected' if f.type == (t.id|string) else '' }}>
+                        {{ t.name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+            </label>
+
+            <label>
+                Maximum Price (Rs)
+                <input
+                    type="number"
+                    name="max_price"
+                    min="0"
+                    value="{{ f.max_price }}"
+                    placeholder="Your budget">
+            </label>
+
+        </div>
+
+        <button type="submit" class="search-submit">
+            Search Available Rooms →
+        </button>
+
+    </form>
+
+</section>
+
+
+<!-- SEARCH INSTRUCTIONS -->
+
+{% if rooms is none %}
+
+<section class="benefits-section">
+
+    <div class="section-heading">
+        <span class="dashboard-label">SIMPLE & CONVENIENT</span>
+        <h2>Your Journey Starts Here</h2>
+        <p>Enjoy a smooth and transparent booking experience.</p>
+    </div>
+
+    <div class="benefits-grid">
+
+        <article class="benefit-card">
+            <div class="benefit-icon">⌕</div>
+            <h3>Find Your Stay</h3>
+            <p>
+                Select your destination, dates and guests
+                to find available rooms.
+            </p>
+        </article>
+
+        <article class="benefit-card">
+            <div class="benefit-icon">✓</div>
+            <h3>Transparent Pricing</h3>
+            <p>
+                Review the room price, GST and service charges
+                before completing your payment.
+            </p>
+        </article>
+
+        <article class="benefit-card">
+            <div class="benefit-icon">♡</div>
+            <h3>Easy Reservations</h3>
+            <p>
+                Manage your reservations and check
+                your booking details conveniently.
+            </p>
+        </article>
+
+    </div>
+
+</section>
+
+
+{% else %}
+
+
+<!-- SEARCH RESULTS -->
+
+<section class="results-section">
+
+    <div class="results-heading">
+
+        <div>
+            <span class="dashboard-label">YOUR SEARCH RESULTS</span>
+
+            <h2>
+                {{ rooms|length }}
+                Room{{ '' if rooms|length == 1 else 's' }}
+                Available
+            </h2>
+
+            <p>Explore the rooms available for your selected dates.</p>
+        </div>
+
+        <div class="results-count">
+            {{ rooms|length }} Results
+        </div>
+
+    </div>
+
+
+    {% if not rooms %}
+
+    <div class="empty-results">
+
+        <div class="empty-icon">⌕</div>
+
+        <h2>No Rooms Found</h2>
+
+        <p>
+            Unfortunately, no rooms are available for your selected
+            dates and preferences.
+        </p>
+
+        <p>
+            Try changing your dates or increasing your maximum budget.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ROOM CARDS -->
+
+    <div class="rooms-grid">
+
+        {% for r in rooms %}
+
+        <article class="tile search-room-card">
+
+            <div class="tile-img">
+
+                {% if r.image %}
+
+                <img
+                    src="{{ url_for('static', filename='uploads/' ~ r.image) }}"
+                    alt="{{ r.type }} room">
+
+                {% else %}
+
+                <div class="room-placeholder">
+                    🏨
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="tile-body">
+
+                <span class="room-subtitle">
+                    HOTEL AGAPASTALA
+                </span>
+
+                <h3>{{ r.hotel }}</h3>
+
+                <div class="room-tags">
+
+                    <span class="tag">{{ r.city }}</span>
+
+                    <span class="tag">{{ r.type }}</span>
+
+                    <span class="tag">
+                        Room {{ r.room_no }}
+                    </span>
+
+                    <span class="tag">
+                        {{ r.capacity }}
+                        Guest{{ '' if r.capacity == 1 else 's' }}
+                    </span>
+
+                </div>
+
+                <div class="room-facilities">
+                    {{ r.facilities }}
+                </div>
+
+
+                <div class="tile-foot">
+
+                    <div class="room-price">
+
+                        <span class="price">
+                            Rs {{ r.price }}
+                        </span>
+
+                        <small>per night</small>
+
+                    </div>
+
+                    <a
+                        class="btn room-book-btn"
+                        href="{{ url_for(
+                            'room',
+                            rid=r.id,
+                            check_in=f.check_in,
+                            check_out=f.check_out,
+                            guests=f.guests or 1
+                        ) }}">
+
+                        View Room →
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+{% endblock %}

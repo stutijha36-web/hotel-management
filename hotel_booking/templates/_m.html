@@ -1,0 +1,33 @@
+
+{% macro fields(fs) %}
+    {% for n, l, t, v, o in fs %}
+        <label class="macro-field">
+            <span class="macro-field-label">{{ l }}</span>
+
+            {% if t == 'select' %}
+                <select name="{{ n }}">
+                    {% for ov, ol in o %}
+                        <option value="{{ ov }}"
+                            {{ 'selected' if ov|string == v|string else '' }}>
+                            {{ ol }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+            {% elif t == 'textarea' %}
+                <textarea name="{{ n }}" rows="4">{{ v }}</textarea>
+
+            {% elif t == 'file' %}
+                <input type="file" name="{{ n }}" accept="image/*">
+
+            {% else %}
+                <input
+                    name="{{ n }}"
+                    type="{{ t }}"
+                    value="{{ '' if t == 'password' else v }}"
+                    {% if t == 'number' %}step="0.01"{% endif %}
+                >
+            {% endif %}
+        </label>
+    {% endfor %}
+{% endmacro %}

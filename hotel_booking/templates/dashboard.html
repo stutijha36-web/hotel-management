@@ -1,0 +1,111 @@
+
+{% extends "base.html" %}
+
+{% block c %}
+
+<!-- Dashboard Header -->
+
+<div class="dashboard-header">
+    <div>
+        <p class="dashboard-label">HOTEL MANAGEMENT</p>
+        <h1>Dashboard Overview</h1>
+        <p>Welcome back! Here's what's happening at Hotel Agapastala.</p>
+    </div>
+
+    <div class="dashboard-date">
+        <span>Management Panel</span>
+    </div>
+</div>
+
+
+<!-- Statistics -->
+
+<div class="stats">
+
+    {% for k,v in st.items() %}
+
+    <div class="card stat-card">
+
+        <div class="stat-top">
+            <span class="stat-label">{{ k }}</span>
+            <span class="stat-icon">◆</span>
+        </div>
+
+        <h2>{{ v }}</h2>
+
+        <small>Hotel performance overview</small>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+
+<!-- Recent Bookings -->
+
+<div class="section-header">
+
+    <div>
+        <p class="dashboard-label">RESERVATION MANAGEMENT</p>
+        <h2>Recent Bookings</h2>
+        <p>Review your latest customer reservations.</p>
+    </div>
+
+    <a href="/admin/bookings" class="btn">
+        View All Bookings →
+    </a>
+
+</div>
+
+
+<!-- Booking Table -->
+
+<div class="table-container">
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Customer</th>
+                <th>Hotel</th>
+                <th>Room</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Total</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for r in rec %}
+
+            <tr>
+
+                {% for c in r %}
+
+                <td>{{ c }}</td>
+
+                {% endfor %}
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+                <td colspan="8" class="empty-state">
+                    No recent bookings available.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

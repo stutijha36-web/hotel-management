@@ -1,0 +1,177 @@
+
+{% extends "base.html" %}
+{% from "_m.html" import fields as F %}
+{% block c %}
+
+<section class="admin-management-page">
+
+    <!-- Page heading -->
+    <div class="admin-page-heading">
+        <div>
+            <p class="room-eyebrow">HOTEL AGAPASTALA · ADMIN</p>
+            <h1>{{ title }}</h1>
+            <p>Manage your hotel operations and records.</p>
+        </div>
+    </div>
+
+    <!-- Report navigation -->
+    {% if tabs %}
+    <div class="admin-tabs">
+        {% for k,n in tabs %}
+            <a class="admin-tab" href="{{ url_for('reports', type=k) }}">
+                {{ n }}
+            </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Booking filters -->
+    {% if request.endpoint=='bookings_admin' %}
+    <div class="admin-filter-section">
+        <span>Filter bookings:</span>
+
+        <a href="?">All</a>
+
+        {% for s in ['Pending','Confirmed','Checked-In','Checked-Out','Cancelled'] %}
+            <a href="?status={{ s }}">{{ s }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Add or edit form -->
+    {% if fields %}
+    <div class="admin-form-card">
+
+        <div class="admin-section-heading">
+            <div>
+                <p class="room-eyebrow">MANAGEMENT</p>
+                <h2>Add or update details</h2>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="admin-form-grid">
+            {{ F(fields) }}
+
+            <div class="admin-form-submit">
+                <button type="submit" class="admin-primary-btn">
+                    {{ submit }}
+                </button>
+            </div>
+        </form>
+
+    </div>
+    {% endif %}
+
+    <!-- Records table -->
+    <div class="admin-records-card">
+
+        <div class="admin-section-heading">
+            <div>
+                <p class="room-eyebrow">RECORDS</p>
+                <h2>{{ title }}</h2>
+            </div>
+
+            <span class="admin-record-count">
+                {{ rows|length }} record(s)
+            </span>
+        </div>
+
+        <div class="admin-table-wrapper">
+
+            <table class="admin-data-table">
+
+                <thead>
+                    <tr>
+                        {% for h in headers %}
+                            <th>{{ h }}</th>
+                        {% endfor %}
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for r in rows %}
+
+                    <tr>
+
+                        {% for c in r.cells %}
+                            <td>{{ c }}</td>
+                        {% endfor %}
+
+                        <td>
+                            <div class="admin-row-actions">
+
+                                {% for a in r.actions %}
+
+                                    {% if a[2]=='get' %}
+
+                                        <a class="admin-table-btn"
+                                           href="{{ a[1] }}">
+                                            {{ a[0] }}
+                                        </a>
+
+                                    {% else %}
+
+                                        <form method="post" action="{{ a[1] }}">
+                                            <button type="submit"
+                                                    class="admin-table-btn admin-post-btn">
+                                                {{ a[0] }}
+                                            </button>
+                                        </form>
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+                            </div>
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="{{ headers|length + 1 }}"
+                            class="admin-empty-row">
+                            No records available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Export options -->
+    {% if export %}
+    <div class="admin-export-section">
+
+        <div>
+            <h3>Export your records</h3>
+            <p>Download your data for reporting and documentation.</p>
+        </div>
+
+        <div class="admin-export-buttons">
+
+            <a class="admin-export-btn" href="{{ export }}">
+                Download Excel (CSV)
+            </a>
+
+            <a class="admin-export-btn" href="{{ export_pdf }}">
+                Download PDF
+            </a>
+
+        </div>
+
+    </div>
+    {% endif %}
+
+</section>
+
+{% endblock %}

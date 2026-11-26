@@ -1,0 +1,166 @@
+
+{% extends "base.html" %}
+{% block c %}
+
+<section class="bookings-page">
+
+    <div class="bookings-header">
+        <div>
+            <p class="room-eyebrow">YOUR ACCOUNT</p>
+            <h1>My Bookings</h1>
+            <p class="bookings-subtitle">
+                Manage your reservations and keep track of your stays.
+            </p>
+        </div>
+    </div>
+
+    {% if rows %}
+
+    <div class="bookings-summary">
+        <div>
+            <span>Total reservations</span>
+            <strong>{{ rows|length }}</strong>
+        </div>
+        <div>
+            <span>Manage your stays</span>
+            <strong>Hotel Agapastala</strong>
+        </div>
+    </div>
+
+    <div class="bookings-table-wrapper">
+
+        <table class="bookings-table">
+
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Hotel & Room</th>
+                    <th>Stay dates</th>
+                    <th>Total amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for b in rows %}
+
+                <tr>
+
+                    <td>
+                        <strong class="booking-code">{{ b.code }}</strong>
+                    </td>
+
+                    <td>
+                        <strong>{{ b.hotel }}</strong>
+                        <span class="booking-room">Room #{{ b.room_no }}</span>
+                    </td>
+
+                    <td>
+                        <span class="booking-date">{{ b.check_in }}</span>
+                        <span class="booking-date-to">to {{ b.check_out }}</span>
+                    </td>
+
+                    <td>
+                        <strong class="booking-amount">Rs {{ b.total }}</strong>
+                    </td>
+
+                    <td>
+                        <span class="booking-status status-{{ b.status|lower|replace(' ', '-') }}">
+                            {{ b.status }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="booking-actions">
+
+                            {% if b.status=='Pending' %}
+                                <a class="booking-action-btn pay-action"
+                                   href="{{ url_for('pay', bid=b.id) }}">
+                                    Pay now
+                                </a>
+                            {% endif %}
+
+                            {% if b.status!='Pending' and b.status!='Cancelled' %}
+                                <a class="booking-action-btn receipt-action"
+                                   href="{{ url_for('receipt', bid=b.id) }}">
+                                    Receipt
+                                </a>
+                            {% endif %}
+
+                            {% if b.status in ('Pending','Confirmed') and b.check_in>today %}
+                                <form method="post"
+                                      action="{{ url_for('cancel', bid=b.id) }}"
+                                      onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+
+                                    <button type="submit" class="booking-action-btn cancel-action">
+                                        Cancel
+                                    </button>
+
+                                </form>
+                            {% endif %}
+
+                            {% if b.status=='Checked-Out' and not b.reviewed %}
+
+                                <form method="post"
+                                      action="{{ url_for('review', bid=b.id) }}"
+                                      class="booking-review-form">
+
+                                    <select name="rating" aria-label="Rating">
+                                        <option value="5">5 ★</option>
+                                        <option value="4">4 ★</option>
+                                        <option value="3">3 ★</option>
+                                        <option value="2">2 ★</option>
+                                        <option value="1">1 ★</option>
+                                    </select>
+
+                                    <input name="comment"
+                                           placeholder="Write a review"
+                                           required>
+
+                                    <button type="submit" class="booking-action-btn review-action">
+                                        Submit
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        </div>
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-bookings">
+
+        <div class="empty-bookings-icon">⌂</div>
+
+        <h2>No bookings yet</h2>
+
+        <p>
+            You haven't made any reservations yet.
+            Explore our rooms and find your perfect stay.
+        </p>
+
+        <a href="{{ url_for('index') }}" class="booking-action-btn pay-action">
+            Explore rooms
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

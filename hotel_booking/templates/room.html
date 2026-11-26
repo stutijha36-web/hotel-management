@@ -1,0 +1,189 @@
+
+{% extends "base.html" %}
+{% from "_m.html" import fields %}
+{% block c %}
+
+<div class="room-detail-layout">
+
+    <!-- Room information -->
+    <section class="room-information">
+
+        <div class="room-detail-image">
+            {% if r.image %}
+                <img src="{{ url_for('static', filename='uploads/' ~ r.image) }}" alt="{{ r.type }} room">
+            {% else %}
+                <div class="room-image-placeholder">Your perfect stay</div>
+            {% endif %}
+        </div>
+
+        <div class="room-detail-content">
+
+            <p class="room-eyebrow">{{ r.city }} · HOTEL AGAPASTALA</p>
+
+            <h1>{{ r.hotel }}</h1>
+            <h2>{{ r.type }} Room <span>#{{ r.room_no }}</span></h2>
+
+            <div class="room-highlights">
+                <span>Up to {{ r.capacity }} guests</span>
+                <span>Rs {{ r.price }} / night</span>
+            </div>
+
+            <div class="room-description">
+                <h3>About this room</h3>
+                <p>{{ r.facilities }}</p>
+            </div>
+
+            <div class="room-description">
+                <h3>Hotel facilities</h3>
+                <p>
+                    {% for x in fac %}
+                        {{ x.facility }}{% if not loop.last %}, {% endif %}
+                    {% else %}
+                        No additional facilities listed.
+                    {% endfor %}
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Booking section -->
+    <aside class="booking-panel">
+
+        <div class="booking-panel-heading">
+            <p class="room-eyebrow">RESERVE YOUR STAY</p>
+            <h2>Book this room</h2>
+            <p>Complete your details to continue.</p>
+        </div>
+
+        {% if qt %}
+        <div class="price-breakdown">
+
+            <h3>Price summary</h3>
+
+            <div class="price-row">
+                <span>{{ qt.nights }} night(s)</span>
+                <span>Rs {{ qt.base }}</span>
+            </div>
+
+            <div class="price-row">
+                <span>GST (12%)</span>
+                <span>Rs {{ qt.tax }}</span>
+            </div>
+
+            <div class="price-row">
+                <span>Service charge (5%)</span>
+                <span>Rs {{ qt.svc }}</span>
+            </div>
+
+            <div class="price-total">
+                <span>Total amount</span>
+                <strong>Rs {{ qt.total }}</strong>
+            </div>
+
+        </div>
+        {% endif %}
+
+        {% if user and user.role=='customer' or not user %}
+
+        <form class="room-booking-form" method="post" action="{{ url_for('book', rid=r.id) }}">
+
+            <label>
+                Check-in
+                <input type="date" name="check_in" min="{{ today }}" value="{{ f.check_in }}">
+            </label>
+
+            <label>
+                Check-out
+                <input type="date" name="check_out" min="{{ today }}" value="{{ f.check_out }}">
+            </label>
+
+            <label>
+                Number of guests
+                <input type="number" name="guests" min="1" value="{{ f.guests or 1 }}">
+            </label>
+
+            <div class="booking-form-divider"></div>
+
+            <h3>Guest information</h3>
+
+            <label>
+                Full name
+                <input name="full_name" value="{{ user.name if user }}">
+            </label>
+
+            <label>
+                Phone number
+                <input name="phone" value="{{ user.phone if user }}">
+            </label>
+
+            <label>
+                Address
+                <input name="address" placeholder="Enter your address">
+            </label>
+
+            <button type="submit" class="booking-submit-btn">
+                Continue to payment →
+            </button>
+
+            <p class="booking-note">
+                Your booking details will be confirmed before payment.
+            </p>
+
+        </form>
+
+        {% else %}
+
+        <p>Only customers can book this room.</p>
+
+        {% endif %}
+
+    </aside>
+
+</div>
+
+
+<!-- Reviews section -->
+<section class="room-reviews">
+
+    <div class="reviews-heading">
+        <div>
+            <p class="room-eyebrow">GUEST EXPERIENCES</p>
+            <h2>Guest reviews</h2>
+        </div>
+    </div>
+
+    <div class="reviews-list">
+
+        {% for v in reviews %}
+
+        <article class="review-card">
+
+            <div class="review-top">
+                <div class="review-stars">
+                    {% for star in range(v.rating|int) %}
+                        ★
+                    {% endfor %}
+                </div>
+
+                <strong>{{ v.name }}</strong>
+            </div>
+
+            <p>{{ v.comment }}</p>
+
+        </article>
+
+        {% else %}
+
+        <div class="no-reviews">
+            <h3>No reviews yet</h3>
+            <p>Be the first guest to share your experience.</p>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endblock %}

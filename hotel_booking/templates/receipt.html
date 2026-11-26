@@ -1,0 +1,193 @@
+
+{% extends "base.html" %}
+{% block c %}
+
+<section class="receipt-page">
+
+    <div class="receipt-topbar">
+        <div>
+            <p class="room-eyebrow">HOTEL AGAPASTALA</p>
+            <h1>Booking Receipt</h1>
+            <p>Your reservation and payment summary.</p>
+        </div>
+
+        <button type="button" class="receipt-print-btn" onclick="window.print()">
+            Print Receipt
+        </button>
+    </div>
+
+    <div class="receipt-card">
+
+        <div class="receipt-brand-header">
+            <div>
+                <h2>HOTEL <span>AGAPASTALA</span></h2>
+                <p>Your perfect stay, beautifully planned.</p>
+            </div>
+
+            <div class="receipt-status">
+                {{ b.status }}
+            </div>
+        </div>
+
+        <div class="receipt-divider"></div>
+
+        <div class="receipt-booking-header">
+            <div>
+                <span>BOOKING REFERENCE</span>
+                <h3>{{ b.code }}</h3>
+            </div>
+
+            <div class="receipt-date">
+                <span>GUEST</span>
+                <strong>{{ c.full_name }}</strong>
+            </div>
+        </div>
+
+        <div class="receipt-section">
+
+            <h3>Guest information</h3>
+
+            <div class="receipt-info-grid">
+                <div>
+                    <span>Full name</span>
+                    <strong>{{ c.full_name }}</strong>
+                </div>
+
+                <div>
+                    <span>Phone number</span>
+                    <strong>{{ c.phone }}</strong>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="receipt-section">
+
+            <h3>Reservation details</h3>
+
+            <div class="receipt-info-grid">
+
+                <div>
+                    <span>Hotel</span>
+                    <strong>{{ b.hotel }}</strong>
+                </div>
+
+                <div>
+                    <span>Location</span>
+                    <strong>{{ b.city }}</strong>
+                </div>
+
+                <div>
+                    <span>Room type</span>
+                    <strong>{{ b.type }} · #{{ b.room_no }}</strong>
+                </div>
+
+                <div>
+                    <span>Guests</span>
+                    <strong>{{ b.guests }} guest(s)</strong>
+                </div>
+
+                <div>
+                    <span>Check-in</span>
+                    <strong>{{ b.check_in }}</strong>
+                </div>
+
+                <div>
+                    <span>Check-out</span>
+                    <strong>{{ b.check_out }}</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="receipt-section">
+
+            <h3>Payment breakdown</h3>
+
+            <table class="receipt-table">
+
+                <tbody>
+
+                    <tr>
+                        <td>Room charges</td>
+                        <td>Rs {{ b.base_amount }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>GST</td>
+                        <td>Rs {{ b.tax }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Service charge</td>
+                        <td>Rs {{ b.service_charge }}</td>
+                    </tr>
+
+                    <tr class="receipt-total">
+                        <th>Total amount</th>
+                        <th>Rs {{ b.total }}</th>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="receipt-section payment-record">
+
+            <h3>Payment information</h3>
+
+            {% if p %}
+
+            <div class="receipt-info-grid">
+
+                <div>
+                    <span>Receipt number</span>
+                    <strong>{{ p.receipt_no }}</strong>
+                </div>
+
+                <div>
+                    <span>Payment method</span>
+                    <strong>{{ p.method }}</strong>
+                </div>
+
+                <div>
+                    <span>Transaction ID</span>
+                    <strong>{{ p.txn_id }}</strong>
+                </div>
+
+                <div>
+                    <span>Payment status</span>
+                    <strong>{{ p.status }}</strong>
+                </div>
+
+                <div>
+                    <span>Paid at</span>
+                    <strong>{{ p.paid_at }} UTC</strong>
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <p class="receipt-pending">
+                Payment is pending. No completed payment receipt is available yet.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+        <div class="receipt-footer">
+            <h3>Thank you for choosing us!</h3>
+            <p>We look forward to welcoming you to Hotel Agapastala.</p>
+            <span>HOTEL AGAPASTALA · BOOKING RECEIPT</span>
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

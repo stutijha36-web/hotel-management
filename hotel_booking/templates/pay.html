@@ -1,0 +1,181 @@
+
+{% extends "base.html" %}
+{% block c %}
+
+<section class="payment-page">
+
+    <div class="payment-heading">
+        <p class="room-eyebrow">SECURE CHECKOUT</p>
+        <h1>Complete Your Payment</h1>
+        <p>Review your reservation details before proceeding.</p>
+    </div>
+
+    <div class="payment-layout">
+
+        <!-- Booking information -->
+        <div class="payment-details">
+
+            <div class="payment-card">
+
+                <div class="payment-card-heading">
+                    <div>
+                        <p class="room-eyebrow">YOUR RESERVATION</p>
+                        <h2>Booking details</h2>
+                    </div>
+
+                    <span class="payment-booking-code">{{ b.code }}</span>
+                </div>
+
+                <div class="payment-hotel-info">
+                    <h3>{{ b.hotel }}</h3>
+                    <p>Room #{{ b.room_no }}</p>
+                </div>
+
+                <div class="payment-dates">
+
+                    <div>
+                        <span>CHECK-IN</span>
+                        <strong>{{ b.check_in }}</strong>
+                    </div>
+
+                    <div class="payment-date-divider">→</div>
+
+                    <div>
+                        <span>CHECK-OUT</span>
+                        <strong>{{ b.check_out }}</strong>
+                    </div>
+
+                </div>
+
+                <div class="payment-nights">
+                    {{ b.nights }} night(s) booked
+                </div>
+
+            </div>
+
+            <div class="payment-card price-summary-card">
+
+                <h2>Price breakdown</h2>
+
+                <div class="payment-price-row">
+                    <span>Room charges ({{ b.nights }} nights)</span>
+                    <span>Rs {{ b.base_amount }}</span>
+                </div>
+
+                <div class="payment-price-row">
+                    <span>GST (12%)</span>
+                    <span>Rs {{ b.tax }}</span>
+                </div>
+
+                <div class="payment-price-row">
+                    <span>Service charge (5%)</span>
+                    <span>Rs {{ b.service_charge }}</span>
+                </div>
+
+                <div class="payment-total-row">
+                    <span>Total payable</span>
+                    <strong>Rs {{ b.total }}</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Payment action -->
+        <aside class="payment-action-card">
+
+            <div class="payment-icon">₹</div>
+
+            <p class="room-eyebrow">PAYMENT SUMMARY</p>
+
+            <h2>Rs {{ b.total }}</h2>
+
+            <p class="payment-caption">Total amount to be paid</p>
+
+            <div class="payment-security">
+                <span>✓</span>
+                <div>
+                    <strong>Secure payment</strong>
+                    <p>Your payment is processed through Razorpay.</p>
+                </div>
+            </div>
+
+            <div class="payment-hold">
+                <span>◷</span>
+                Your room is held for 15 minutes.
+            </div>
+
+            <form id="payform" method="post"
+                  action="{{ url_for('pay_confirm', bid=b.id) }}">
+
+                <input type="hidden" name="razorpay_payment_id" id="pid">
+                <input type="hidden" name="razorpay_order_id" id="oid">
+                <input type="hidden" name="razorpay_signature" id="sig">
+
+                {% if order %}
+
+                    <button type="button" id="paybtn" class="payment-submit-btn">
+                        Pay Rs {{ b.total }} securely →
+                    </button>
+
+                {% else %}
+
+                    <button type="submit" class="payment-submit-btn">
+                        Pay Rs {{ b.total }} (Test Payment)
+                    </button>
+
+                    <p class="test-payment-note">
+                        Test mode: no real money is charged.
+                    </p>
+
+                {% endif %}
+
+            </form>
+
+            <p class="payment-footer-note">
+                By proceeding, you agree to complete the booking payment.
+            </p>
+
+        </aside>
+
+    </div>
+
+</section>
+
+{% if order %}
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    document.getElementById("paybtn").onclick = function () {
+
+        var rzp = new Razorpay({
+
+            key: {{ key | tojson }},
+            order_id: {{ order.id | tojson }},
+            amount: {{ order.amount | tojson }},
+            currency: "INR",
+            name: "HOTEL AGAPASTALA",
+
+            handler: function (resp) {
+
+                document.getElementById("pid").value =
+                    resp.razorpay_payment_id;
+
+                document.getElementById("oid").value =
+                    resp.razorpay_order_id;
+
+                document.getElementById("sig").value =
+                    resp.razorpay_signature;
+
+                document.getElementById("payform").submit();
+            }
+        });
+
+        rzp.open();
+    };
+</script>
+
+{% endif %}
+
+{% endblock %}
