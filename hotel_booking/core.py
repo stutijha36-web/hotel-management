@@ -31,7 +31,6 @@ def db():
 def _close(e):
     d = g.pop("db", None)
     if d: d.close()
-
 def q(sql, a=(), one=False):
     r = db().execute(sql, a).fetchall(); return (r[0] if r else None) if one else r
 
